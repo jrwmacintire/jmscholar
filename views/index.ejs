@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="JMScholar - Node running on Elastic Beanstalk">
+    <meta name="author" content="John MacIntire">
+
+    <title>JMScholar</title>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="../styles/styles.css">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="header">
+        <h3 class="text-muted">JMScholar</h3>
+      </div>
+	  <% if (flask_debug === 'true') { %>
+      <div class="alert alert-danger">
+      	Flask is in debug mode. This is not safe for production.
+      </div>
+      <% } %>
+      <div id="signupSuccess" class="alert alert-success" style="display:none">
+        <p id="signupSuccessText">Thank you for registering! We'll get in contact with you soon.</p>
+      </div>
+      <div id="signupDuplicate" class="alert alert-success" style="display:none">
+        <p id="signupDuplicateText">You're already registered! Check your email for a response or email director@jmscholar.org.</p>
+      </div>
+      <div id="signupError" class="alert alert-info" style="display:none">
+        <p id="signupErrorText">Error! Looks like we're having trouble getting you on the list.</p>
+      </div>
+      <div class="jumbotron">
+        <p class="lead">Register with JMScholar.org</p>
+        <p><a class="btn btn-lg btn-success"  data-toggle="modal" href="#signupModal">Register</a></p>
+      </div>
+
+
+      <div class="footer">
+        <p>&copy; JMScholar 2019</p>
+      </div>
+
+      <!-- Modal -->
+       <div class="modal fade" id="signupModal" tabindex="-1" role="dialog" aria-labelledby="signupModal" aria-hidden="true">
+         <div class="modal-dialog">
+           <div class="modal-content">
+             <div class="modal-header">
+               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+               <h4 class="modal-title">Provide a few details and we'll be in touch...</h4>
+             </div>
+             <div class="modal-body">
+               <form id="signupForm" role="form">
+                 <input type="hidden" id="theme" name="theme" value="<%= theme %>"/>
+                 <div class="form-group">
+                   <label for="name">Name</label>
+                   <input type="text" class="form-control" id="name" name="name" placeholder="Your name">
+                 </div>
+                 <div class="form-group">
+                   <label for="email">Email address</label>
+                   <input type="email" class="form-control" id="email" name="email" placeholder="Your email address">
+                 </div>
+                 <div class="form-group">
+                   <label for="participating">Interested in becoming a Participating School?</label>
+                   <select class="form-control" name="participating">
+                     <option>Yes</option>
+                     <option>No</option>
+                   </select>
+                 </div>
+             </div>
+             <div class="modal-footer">
+               <button id="signup" type="button" class="btn btn-primary">Sign Up!</button>
+             </div>
+           </div><!-- /.modal-content -->
+         </div><!-- /.modal-dialog -->
+       </div><!-- /.modal -->
+
+    </div> <!-- /container -->
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+      $("#signup").click(function() {
+        $.post( "/signup", $("#signupForm").serialize(),
+                function(data) {
+                  $("#signupSuccess").show();
+                }
+              )
+              .error(function(xhr) {
+                switch(xhr.status) {
+                  case 409:
+                    $("#signupDuplicate").show();
+                    break;
+                  default:
+                    $("#signupError").show();
+                }
+              })
+              .always(function() {
+                $("#signupModal").modal('hide');
+              });
+      })
+    })
+    </script>
+  </body>
+</html>

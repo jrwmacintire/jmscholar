@@ -1,0 +1,14 @@
+{
+  "name": "JMScholar.org Databse",
+  "version": "1.1.4",
+  "private": true,
+  "dependencies": {
+    "aws-sdk": "latest",
+    "body-parser": "latest",
+    "ejs": "latest",
+    "express": "latest"
+  },
+  "scripts": {
+    "start": "node app.js"
+  }
+}
