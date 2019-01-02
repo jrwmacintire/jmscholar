@@ -1,5 +1,5 @@
 {
-  "name": "JMScholar.org Databse",
+  "name": "jmscholar-elastic-beanstalk",
   "version": "1.1.4",
   "private": true,
   "dependencies": {
@@ -9,6 +9,11 @@
     "express": "latest"
   },
   "scripts": {
-    "start": "node app.js"
+    "start": "nodemon app.js",
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.9"
   }
 }

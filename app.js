@@ -31,9 +31,11 @@ if (cluster.isMaster) {
     AWS.config.region = process.env.REGION;
 
     var sns = new AWS.SNS();
-    var ddb = new AWS.DynamoDB();
+    var ddb = new AWS.DynamoDB({ region: 'us-west-2' });
 
     var ddbTable =  process.env.STARTUP_SIGNUP_TABLE;
+    // console.log(`process.env.STARTUP_SIGNUP_TABLE: ${process.env.STARTUP_SIGNUP_TABLE}`);
+    // console.log(process.env.TEST);
     var snsTopic =  process.env.NEW_SIGNUP_TOPIC;
     var app = express();
 
@@ -58,19 +60,20 @@ if (cluster.isMaster) {
         };
 
         ddb.putItem({
-            'TableName': ddbTable,
+            'TableName': 'jmscholar-db', // changed from 'ddbTable' to 'jmscholar-db' string
             'Item': item,
             'Expected': { email: { Exists: false } }
         }, function(err, data) {
             if (err) {
                 var returnStatus = 500;
+                // console.log(err);
 
                 if (err.code === 'ConditionalCheckFailedException') {
                     returnStatus = 409;
                 }
 
-                res.status(returnStatus).end();
-                console.log('DDB Error: ' + err, `\t\tat ${Date.now()}`);
+                console.log('DDB Error: ' + err);
+                res.status(returnStatus).send(err);
             } else {
                 sns.publish({
                     'Message': 'Name: ' + req.body.name + "\r\nEmail: " + req.body.email
