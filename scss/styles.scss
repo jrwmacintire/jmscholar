@@ -1,0 +1,17 @@
+$main-background: #ghostwhite;
+
+body {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    font-size: 16px;
+    background-color: $main-background;
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    padding: 30px;
+
+    h1 {
+        font-size: 3rem;
+    }
+}

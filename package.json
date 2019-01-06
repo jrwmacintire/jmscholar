@@ -10,10 +10,13 @@
   },
   "scripts": {
     "start": "nodemon app.js",
-    "test": "mocha"
+    "test": "mocha",
+    "scss": "node-sass --watch scss/ -o public/styles/"
   },
   "devDependencies": {
     "mocha": "^5.2.0",
-    "nodemon": "^1.18.9"
+    "node-sass": "^4.11.0",
+    "nodemon": "^1.18.9",
+    "pug": "^2.0.3"
   }
 }

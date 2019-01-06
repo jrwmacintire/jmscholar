@@ -1,0 +1,12 @@
+body {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  font-size: 16px;
+  background-color: #ghostwhite;
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+  padding: 30px; }
+  body h1 {
+    font-size: 3rem; }
