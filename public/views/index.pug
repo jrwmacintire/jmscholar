@@ -19,7 +19,7 @@ html(lang='en')
         
         p For technical concerns please contact jrwmacintire@gmail.com.
         
-        form(action='/signup' method='POST')
+        form(action='/register-hs' method='POST')
             div.form-group
                 label(for='name') Name:
                 input(type="text" name='name' placeholder='Enter your full name...' required)
@@ -28,7 +28,9 @@ html(lang='en')
                 input(type='text' name='email' placeholder='Enter your email...' required)
             div.form-group
                 label(for='participating') Participating: 
-                input(type='checkbox')
+                select(name='participating' required)
+                    option(value='participating') 'Participating'
+                    option(value='non-participating') Not 'Participating'
             div.form-group
                 label(for='phone') Phone:
                 input(type='text' name='phone' required)
@@ -57,8 +59,8 @@ html(lang='en')
                 label(for="additionalContact1") Additional Contact:
                 input(type="text" class="form-control" name="additionalContact1" placeholder="Enter name")
             div(class="form-group")
-                label(for="titles") Titles:
-                select(class="titles form-control" name="titles")
+                label(for="ac1title") Titles:
+                select(class="titles form-control" name="ac1title")
                     option(value="teacher") Teacher
                     option(value="counselor") Guidance Counselor
                     option(value="headOfDep") Head of Department
@@ -75,8 +77,8 @@ html(lang='en')
                 label(for="additionalContact2") Additional Contact:
                 input(type="text" class="form-control" name="additionalContact2" placeholder="Enter name")
             div(class="form-group")
-                label(for="titles") Titles:
-                select(class="titles form-control" name="titles")
+                label(for="ac2title") Titles:
+                select(class="titles form-control" name="ac2title")
                     option(value="teacher") Teacher
                     option(value="counselor") Guidance Counselor
                     option(value="headOfDep") Head of Department
@@ -90,7 +92,10 @@ html(lang='en')
                 label(for="addContactPhone2") Phone:
                 input(type="text" class="form-control" name="addContactPhone2" placeholder="Phone")
             div(class="form-group")
-                button(type='submit'  name='submit' class='btn btn-primary') Submit
+                button(type='submit' class='btn btn-primary') Submit (HSRF)
+    
+    form(action='/register-student' method='POST')
+        button(type='submit') Submit (Student)
             
         
     script(src='../scripts/script.js')

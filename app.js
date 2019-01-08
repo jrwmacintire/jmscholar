@@ -54,12 +54,13 @@ if (cluster.isMaster) {
         });
     });
 
-    app.post('/signup', function(req, res) {
+    app.post('/register-hs', function(req, res) {
         console.log('\nreq.body:\n', req.body);
+
         var item = {
             'email': {'S': req.body.email},
             'name': {'S': req.body.name},
-            'participating': {'BOOL': req.body.participating},
+            'participating': {'S': req.body.participating},
         };
 
         console.log('\nitem:\n',item);
@@ -96,6 +97,11 @@ if (cluster.isMaster) {
                 });
             }
         });
+    });
+
+    app.post('/register-student', (req, res) => {
+        console.log(`\nReceived POST request at '/register-student'!`, '\nreq.body:\n', req.body);
+        res.status(201).send(`Response from '/register-student'!`)
     });
 
     var port = process.env.PORT || 3000;
