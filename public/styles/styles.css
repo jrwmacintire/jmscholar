@@ -10,3 +10,15 @@ body {
   padding: 30px; }
   body h1 {
     font-size: 3rem; }
+  body form {
+    width: 32%;
+    margin: 3rem auto;
+    padding: 2rem;
+    border: 3px solid lightgrey;
+    display: flex;
+    justify-content: center;
+    flex-direction: column; }
+    body form div.form-group label {
+      margin-right: 7px; }
+    body form div.form-group input {
+      margin: 5px; }

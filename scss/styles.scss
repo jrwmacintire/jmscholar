@@ -14,4 +14,28 @@ body {
     h1 {
         font-size: 3rem;
     }
+
+    form {
+        width: 32%;
+        margin: 3rem auto;
+        padding: 2rem;
+        border: 3px solid lightgrey;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+
+        div.form-group {
+
+            label {
+                margin-right: 7px;
+            }
+
+            input {
+                margin: 5px;
+            }
+
+        }
+
+    }
+
 }

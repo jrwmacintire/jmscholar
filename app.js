@@ -33,6 +33,8 @@ if (cluster.isMaster) {
     var sns = new AWS.SNS();
     var ddb = new AWS.DynamoDB({ region: 'us-west-2' });
 
+    // console.log('process.env.REGION: ', process.env.REGION);
+
     var ddbTable =  process.env.STARTUP_SIGNUP_TABLE;
     // console.log(`process.env.STARTUP_SIGNUP_TABLE: ${process.env.STARTUP_SIGNUP_TABLE}`);
     // console.log(process.env.TEST);
@@ -53,12 +55,14 @@ if (cluster.isMaster) {
     });
 
     app.post('/signup', function(req, res) {
+        console.log('\nreq.body:\n', req.body);
         var item = {
             'email': {'S': req.body.email},
             'name': {'S': req.body.name},
-            'participating': {'S': req.body.participating},
-            'theme': {'S': req.body.theme}
+            'participating': {'BOOL': req.body.participating},
         };
+
+        console.log('\nitem:\n',item);
 
         ddb.putItem({
             'TableName': 'jmscholar-db', // changed from 'ddbTable' to 'jmscholar-db' string

@@ -2,8 +2,10 @@ doctype html
 html(lang='en')
     head
         meta(charset='utf-8')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')
         meta(name='author' content='John MacIntire')
         meta(name='description' content="JMScholar.org's server configuration on Elastic Beanstalk, using DynamoDB for storage. Templates are generated using Pug and Express templating.")
+        meta(name='viewport', content='width=device-width, initial-scale=1')
         link(href='../styles/styles.css', rel='stylesheet')
         link(href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet')
         title JMScholar.org
@@ -17,3 +19,78 @@ html(lang='en')
         
         p For technical concerns please contact jrwmacintire@gmail.com.
         
+        form(action='/signup' method='POST')
+            div.form-group
+                label(for='name') Name:
+                input(type="text" name='name' placeholder='Enter your full name...' required)
+            div.form-group
+                label(for='email') Email:
+                input(type='text' name='email' placeholder='Enter your email...' required)
+            div.form-group
+                label(for='participating') Participating: 
+                input(type='checkbox')
+            div.form-group
+                label(for='phone') Phone:
+                input(type='text' name='phone' required)
+            div.form-group
+                label(for='hsName') Highschool Name:
+                input(type='text' name='hsName' required)
+            div.form-group
+                label(for='hsCode') Highschool Code:
+                input(type='text' name='hsCode')
+            div.form-group
+                label(for='title') Title:
+                input(type='text' name='title' required)
+            div.form-group
+                label(for='city') City:
+                input(type='text' name='city' required)
+            div.form-group
+                label(for='state')
+                select(name='state' required)
+                    option(value='state1')
+                    option(value='state2')
+                    option(value='state3')
+                    option(value='state4')
+                    option(value='state5')
+                        
+            div(class="form-group")
+                label(for="additionalContact1") Additional Contact:
+                input(type="text" class="form-control" name="additionalContact1" placeholder="Enter name")
+            div(class="form-group")
+                label(for="titles") Titles:
+                select(class="titles form-control" name="titles")
+                    option(value="teacher") Teacher
+                    option(value="counselor") Guidance Counselor
+                    option(value="headOfDep") Head of Department
+                    option(value="principal") Principal
+                    option(value="vicePrincipal") Vice Principal
+                    option(value="registrar") School Registrar
+            div(class="form-group")
+                label(for="addContactEmail1") Email
+                input(type="text" class="form-control" name="addContactEmail1" placeholder="Email")
+            div(class="form-group")
+                label(for="addContactPhone1") Phone
+                input(type="text" class="form-control" name="addContactPhone1" placeholder="Phone")
+            div(class="form-group")
+                label(for="additionalContact2") Additional Contact
+                input(type="text" class="form-control" name="additionalContact2" placeholder="Enter name")
+            div(class="form-group")
+                label(for="titles") Titles:
+                select(class="titles form-control" name="titles")
+                    option(value="teacher") Teacher
+                    option(value="counselor") Guidance Counselor
+                    option(value="headOfDep") Head of Department
+                    option(value="principal") Principal
+                    option(value="vicePrincipal") Vice Principal
+                    option(value="registrar") School Registrar
+            div(class="form-group")
+                label(for="addContactEmail2") Email
+                input(type="text" class="form-control" name="addContactEmail2" placeholder="Email")
+            div(class="form-group")
+                label(for="addContactPhone2") Phone
+                input(type="text" class="form-control" name="addContactPhone2" placeholder="Phone")
+            div(class="form-group")
+                button(type='submit'  name='submit' class='btn btn-primary') Submit
+            
+        
+    script(src='../scripts/script.js')
