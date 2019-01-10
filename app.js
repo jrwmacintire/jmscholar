@@ -60,7 +60,7 @@ if (cluster.isMaster) {
         var item = {
             'email': {'S': req.body.email},
             'name': {'S': req.body.name},
-            'participating': {'S': req.body.participating},
+            'phone': {'S': req.body.phone},
         };
 
         console.log('\nitem:\n',item);
