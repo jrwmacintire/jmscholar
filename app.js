@@ -28,9 +28,7 @@ if (cluster.isMaster) {
     var bodyParser = require('body-parser');
     var path = require('path');
 
-    const validateName = require('./lib/validateName');
-    const validateEmail = require('./lib/validateEmail');
-    const validatePhoneNumber = require('./lib/validatePhoneNumber');
+    const validateItem = require('./lib/validateItem');
 
     AWS.config.region = process.env.REGION;
 
@@ -62,34 +60,6 @@ if (cluster.isMaster) {
         console.log('\nreq.body:\n', req.body);
 
         const { name, email, phone } = req.body;
-
-        function validateItem(obj) {
-            const validName = validateName(name);
-            const validEmail = validateEmail(email);
-            const validPhone = validatePhoneNumber(phone);
-
-            if(validName && validEmail && validPhone) {
-                console.log('\nName, email, and phone number are valid!!');
-                res.status(200).send({
-                    message: 'Success - name, email, and phone number are all valid!',
-                    name: name,
-                    email: email,
-                    phone: phone
-                });
-            } else {
-                console.error('Error: validation failed.', `name: ${validName} | email: ${validEmail} | phone: ${validPhone}`);
-                res.status(400).send({
-                    errorMessage: 'Validation failed. Name, email, or phone number are invalid.',
-                    name: name,
-                    validName: validName,
-                    email: email,
-                    validEmail: validEmail,
-                    phone: phone,
-                    validPhone: validPhone
-                });
-            }
-
-        }
 
         var item = {
             'email': {'S': req.body.email },
@@ -146,8 +116,20 @@ if (cluster.isMaster) {
                             res.status(201).end();
                         }
                     });
+                    // res.status(200).send({
+                    //     message: 'Success - name, email, and phone number are all valid!',
+                    //     name: name,
+                    //     email: email,
+                    //     phone: phone
+                    // });
                 }
-            });}
+            });
+        } else {
+            res.status(400).send({
+                errorMessage: 'Validation failed. Name, email, or phone number are invalid.',
+                body: req.body
+            });
+        }
     });
 
     app.post('/register-student', (req, res) => {
