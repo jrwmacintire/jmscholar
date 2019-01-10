@@ -1,14 +1,15 @@
+
 // Include the cluster module
-var cluster = require('cluster');
+const cluster = require('cluster');
 
 // Code to run if we're in the master process
 if (cluster.isMaster) {
 
     // Count the machine's CPUs
-    var cpuCount = require('os').cpus().length;
+    const cpuCount = require('os').cpus().length;
 
     // Create a worker for each CPU
-    for (var i = 0; i < cpuCount; i += 1) {
+    for (let i = 0; i < cpuCount; i += 1) {
         cluster.fork();
     }
 
@@ -23,23 +24,30 @@ if (cluster.isMaster) {
 
 // Code to run if we're in a worker process
 } else {
-    var AWS = require('aws-sdk');
-    var express = require('express');
-    var bodyParser = require('body-parser');
-    var path = require('path');
+    const AWS = require('aws-sdk');
+    const express = require('express');
+    const bodyParser = require('body-parser');
+    const path = require('path');
+    const validateEmail = require('./lib/validateEmail');
+    const validateName = require('./lib/validateName');
+    const validatePhoneNumber = require('./lib/validatePhoneNumber');
 
-    AWS.config.region = process.env.REGION;
+    AWS.config.update = { region: 'us-west-2' };
 
-    var sns = new AWS.SNS();
-    var ddb = new AWS.DynamoDB({ region: 'us-west-2' });
+    const sns = new AWS.SNS();
+    const ddb = new AWS.DynamoDB({ region: 'us-west-2' });
 
+    // ddb.listTables({ Limit: 5 }, (err, data) => {
+    //     if(err) console.log('Error:\n', err);
+    //     else console.log('Tables names are:\n', data.TableNames);
+    // })
     // console.log('process.env.REGION: ', process.env.REGION);
 
-    var ddbTable =  process.env.STARTUP_SIGNUP_TABLE;
+    const ddbTable =  process.env.STARTUP_SIGNUP_TABLE;
     // console.log(`process.env.STARTUP_SIGNUP_TABLE: ${process.env.STARTUP_SIGNUP_TABLE}`);
     // console.log(process.env.TEST);
-    var snsTopic =  process.env.NEW_SIGNUP_TOPIC;
-    var app = express();
+    const snsTopic =  process.env.NEW_SIGNUP_TOPIC;
+    const app = express();
 
     app.set('view engine', 'pug');
     app.set('views', './public/views');
@@ -57,46 +65,75 @@ if (cluster.isMaster) {
     app.post('/register-hs', function(req, res) {
         console.log('\nreq.body:\n', req.body);
 
-        var item = {
+        const item = {
             'email': {'S': req.body.email},
             'name': {'S': req.body.name},
             'participating': {'S': req.body.participating},
         };
+        // console.log('\nitem:\n',item);
 
-        console.log('\nitem:\n',item);
+        function validateItem(obj) {
+            console.log('\nValidate item:\n', obj);
+            // Validating required fields:
+            // name, email, phone, HS name, title, city, state, and 'Participating' status
+            const validName = validateName(obj.name);
+            const validEmail = validateEmail(obj.email);
+            const validPhoneNumber = validatePhoneNumber(obj.phone);
 
-        ddb.putItem({
-            'TableName': 'jmscholar-db', // changed from 'ddbTable' to 'jmscholar-db' string
-            'Item': item,
-            'Expected': { email: { Exists: false } }
-        }, function(err, data) {
-            if (err) {
-                var returnStatus = 500;
-                // console.log(err);
+            // console.log(`validName: ${validName} - validEmail: ${validEmail} - validPhoneNumber: ${validPhoneNumber}`);
+            console.log(`obj.name: ${obj.name} | obj.email: ${obj.email} | obj.phone: ${obj.phone}`);
 
-                if (err.code === 'ConditionalCheckFailedException') {
-                    returnStatus = 409;
-                }
-
-                console.log('DDB Error: ' + err);
-                res.status(returnStatus).send(err);
+            // Checking for the non-required fields
+            if(validName && validEmail && validPhoneNumber) {
+                return true;
             } else {
-                sns.publish({
-                    'Message': 'Name: ' + req.body.name + "\r\nEmail: " + req.body.email
-                                        + "\r\nParticipating: " + req.body.participating
-                                        + "\r\nTheme: " + req.body.theme,
-                    'Subject': 'New High School Request Form - JMScholar.org',
-                    'TopicArn': snsTopic
-                }, function(err, data) {
-                    if (err) {
-                        res.status(500).end();
-                        console.log('SNS Error: ' + err);
-                    } else {
-                        res.status(201).end();
-                    }
-                });
+                console.log('Failed to validate fields.', `validName: ${validName} - validEmail: ${validEmail} - validPhoneNumber: ${validPhoneNumber}`);
+                return false;
             }
-        });
+        }
+
+        const validItem = validateItem(req.body);
+
+        if(validItem){
+            console.log('Item is valid. Validated email, name, and phone number!');
+            ddb.putItem({
+                'TableName': 'jmscholar-db', // changed from 'ddbTable' to 'jmscholar-db' string
+                'Item': item,
+                'Expected': { email: { Exists: false } }
+            }, function(err, data) {
+                if (err) {
+                    const returnStatus = 500;
+                    // console.log(err);
+
+                    if (err.code === 'ConditionalCheckFailedException') {
+                        returnStatus = 409;
+                    }
+
+                    console.log('DDB Error: ' + err);
+                    res.status(returnStatus).send(err);
+                } else {
+                    sns.publish({
+                        'Message': 'Name: ' + req.body.name + "\r\nEmail: " + req.body.email
+                                            + "\r\nParticipating: " + req.body.participating
+                                            + "\r\nTheme: " + req.body.theme,
+                        'Subject': 'New High School Request Form - JMScholar.org',
+                        'TopicArn': snsTopic
+                    }, function(err, data) {
+                        if (err) {
+                            res.status(500).end();
+                            console.log('SNS Error: ' + err);
+                        } else {
+                            res.status(201).end();
+                        }
+                    });
+                }
+            });
+        } else {
+            res.status(400).send({
+                error: 'Object contains validation errors.',
+                item: item
+            });
+        }
     });
 
     app.post('/register-student', (req, res) => {
@@ -104,9 +141,9 @@ if (cluster.isMaster) {
         res.status(201).send(`Response from '/register-student'!`)
     });
 
-    var port = process.env.PORT || 3000;
+    const port = process.env.PORT || 3000;
 
-    var server = app.listen(port, function () {
+    const server = app.listen(port, function () {
         console.log('Server running at http://127.0.0.1:' + port + '/');
     });
 }
