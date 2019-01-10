@@ -28,6 +28,10 @@ if (cluster.isMaster) {
     var bodyParser = require('body-parser');
     var path = require('path');
 
+    const validateName = require('./lib/validateName');
+    const validateEmail = require('./lib/validateEmail');
+    const validatePhoneNumber = require('./lib/validatePhoneNumber');
+
     AWS.config.region = process.env.REGION;
 
     var sns = new AWS.SNS();
@@ -57,46 +61,93 @@ if (cluster.isMaster) {
     app.post('/register-hs', function(req, res) {
         console.log('\nreq.body:\n', req.body);
 
+        const { name, email, phone } = req.body;
+
+        function validateItem(obj) {
+            const validName = validateName(name);
+            const validEmail = validateEmail(email);
+            const validPhone = validatePhoneNumber(phone);
+
+            if(validName && validEmail && validPhone) {
+                console.log('\nName, email, and phone number are valid!!');
+                res.status(200).send({
+                    message: 'Success - name, email, and phone number are all valid!',
+                    name: name,
+                    email: email,
+                    phone: phone
+                });
+            } else {
+                console.error('Error: validation failed.', `name: ${validName} | email: ${validEmail} | phone: ${validPhone}`);
+                res.status(400).send({
+                    errorMessage: 'Validation failed. Name, email, or phone number are invalid.',
+                    name: name,
+                    validName: validName,
+                    email: email,
+                    validEmail: validEmail,
+                    phone: phone,
+                    validPhone: validPhone
+                });
+            }
+
+        }
+
         var item = {
-            'email': {'S': req.body.email},
-            'name': {'S': req.body.name},
-            'phone': {'S': req.body.phone},
+            'email': {'S': req.body.email },
+            'name': {'S': req.body.name },
+            'participating': { 'S': req.body.participating },
+            'phone': {'S': req.body.phone },
+            'hsName': { 'S': req.body.hsName },
+            'hsCode': { 'S': req.body.hsCode },
+            'title': { 'S': req.body.title },
+            'city': { 'S': req.body.city },
+            'state': { 'S': req.body.state },
+            'ac1Name': { 'S': req.body.ac1Name },
+            'ac1Title': { 'S': req.body.ac1Title },
+            'ac1Email': { 'S': req.body.ac1Email },
+            'ac1Phone': { 'S': req.body.ac1Phone},
+            'ac2Name': { 'S': req.body.ac2Name },
+            'ac2Title': { 'S': req.body.ac2Title },
+            'ac2Email': { 'S': req.body.ac2Email },
+            'ac2Phone': { 'S': req.body.ac2Phone}
         };
 
         console.log('\nitem:\n',item);
 
-        ddb.putItem({
-            'TableName': 'jmscholar-db', // changed from 'ddbTable' to 'jmscholar-db' string
-            'Item': item,
-            'Expected': { email: { Exists: false } }
-        }, function(err, data) {
-            if (err) {
-                var returnStatus = 500;
-                // console.log(err);
+        const validItem = validateItem(req.body);
 
-                if (err.code === 'ConditionalCheckFailedException') {
-                    returnStatus = 409;
-                }
+        if(validItem){
+            ddb.putItem({
+                'TableName': 'jmscholar-db', // changed from 'ddbTable' to 'jmscholar-db' string
+                'Item': item,
+                'Expected': { email: { Exists: false } }
+            }, function(err, data) {
+                if (err) {
+                    var returnStatus = 500;
+                    // console.log(err);
 
-                console.log('DDB Error: ' + err);
-                res.status(returnStatus).send(err);
-            } else {
-                sns.publish({
-                    'Message': 'Name: ' + req.body.name + "\r\nEmail: " + req.body.email
-                                        + "\r\nParticipating: " + req.body.participating
-                                        + "\r\nTheme: " + req.body.theme,
-                    'Subject': 'New High School Request Form - JMScholar.org',
-                    'TopicArn': snsTopic
-                }, function(err, data) {
-                    if (err) {
-                        res.status(500).end();
-                        console.log('SNS Error: ' + err);
-                    } else {
-                        res.status(201).end();
+                    if (err.code === 'ConditionalCheckFailedException') {
+                        returnStatus = 409;
                     }
-                });
-            }
-        });
+
+                    console.log('DDB Error: ' + err);
+                    res.status(returnStatus).send(err);
+                } else {
+                    sns.publish({
+                        'Message': 'Name: ' + req.body.name + "\r\nEmail: " + req.body.email
+                                            + "\r\nParticipating: " + req.body.participating
+                                            + "\r\nTheme: " + req.body.theme,
+                        'Subject': 'New High School Request Form - JMScholar.org',
+                        'TopicArn': snsTopic
+                    }, function(err, data) {
+                        if (err) {
+                            res.status(500).end();
+                            console.log('SNS Error: ' + err);
+                        } else {
+                            res.status(201).end();
+                        }
+                    });
+                }
+            });}
     });
 
     app.post('/register-student', (req, res) => {
