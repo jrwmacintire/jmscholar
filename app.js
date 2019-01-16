@@ -28,18 +28,23 @@ if (cluster.isMaster) {
     const bodyParser = require('body-parser');
     const path = require('path');
 
+    AWS.config.region = process.env.AWS_REGION;
+
+    const createDDBTable = require('./lib/createDDBTable');
+    const deleteDDBTable = require('./lib/deleteDDBTable');
     const validateItem = require('./lib/validateItem');
 
-    AWS.config.region = process.env.REGION;
-
     const sns = new AWS.SNS();
+    const ddbTableName = 'jmscholar-db';
     const ddb = new AWS.DynamoDB({ region: 'us-west-2' });
 
-    // console.log('process.env.REGION: ', process.env.REGION);
+    // createDDBTable(ddb, ddbTableName);
+    // deleteDDBTable(ddb, ddbTableName);
+    // ddb.listTables({ Limit: 5 }, (err, data) => {
+    //     if(err) console.error('Error listing DB tables.', err);
+    //     else console.log('\nListing DB tables:\n', data.tableNames);
+    // });
 
-    const ddbTable =  process.env.STARTUP_SIGNUP_TABLE;
-    // console.log(`process.env.STARTUP_SIGNUP_TABLE: ${process.env.STARTUP_SIGNUP_TABLE}`);
-    // console.log(process.env.TEST);
     const snsTopic =  process.env.NEW_SIGNUP_TOPIC;
     const app = express();
 
@@ -65,7 +70,7 @@ if (cluster.isMaster) {
 
         if(validItem.valid){
             ddb.putItem({
-                'TableName': 'jmscholar-db', // changed from 'ddbTable' to 'jmscholar-db' string
+                'TableName': ddbTableName,
                 'Item': validItem.item,
                 'Expected': { email: { Exists: false } }
             }, function(err, data) {

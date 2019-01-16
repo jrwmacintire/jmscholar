@@ -3,9 +3,7 @@
   "version": "1.1.4",
   "private": true,
   "dependencies": {
-    "aws-sdk": "latest",
     "body-parser": "latest",
-    "ejs": "latest",
     "express": "latest"
   },
   "scripts": {
@@ -17,6 +15,7 @@
     "mocha": "^5.2.0",
     "node-sass": "^4.11.0",
     "nodemon": "^1.18.9",
-    "pug": "^2.0.3"
+    "pug": "^2.0.3",
+    "shortid": "^2.2.14"
   }
 }

@@ -40,26 +40,28 @@ html(lang='en')
             div.form-group
                 label(for='hsCode') Highschool Code:
                 input(type='text' name='hsCode')
-            div.form-group
-                label(for='title') Title:
-                input(type='text' name='title' required)
+            div(class="form-group")
+                label(for="title") Title:
+                select(class="titles form-control" name="title")
+                    option(value="teacher") Teacher
+                    option(value="counselor") Guidance Counselor
+                    option(value="headOfDep") Head of Department
+                    option(value="principal") Principal
+                    option(value="vicePrincipal") Vice Principal
+                    option(value="registrar") School Registrar
             div.form-group
                 label(for='city') City:
                 input(type='text' name='city' required)
             div.form-group
                 label(for='state') State:
                 select(name='state' required)
-                    option(value='state1') State1
-                    option(value='state2') State2
-                    option(value='state3') State3
-                    option(value='state4') State4
-                    option(value='state5') State5
+                    option(value='AZ') Arizona
                         
             div(class="form-group")
                 label(for="ac1Name") Additional Contact:
                 input(type="text" class="form-control" name="ac1Name" placeholder="Enter name")
             div(class="form-group")
-                label(for="ac1Title") Titles:
+                label(for="ac1Title") Title:
                 select(class="titles form-control" name="ac1Title")
                     option(value="teacher") Teacher
                     option(value="counselor") Guidance Counselor
@@ -77,7 +79,7 @@ html(lang='en')
                 label(for="ac2Name") Additional Contact:
                 input(type="text" class="form-control" name="ac2Name" placeholder="Enter name")
             div(class="form-group")
-                label(for="ac2Title") Titles:
+                label(for="ac2Title") Title:
                 select(class="titles form-control" name="ac2Title")
                     option(value="teacher") Teacher
                     option(value="counselor") Guidance Counselor
