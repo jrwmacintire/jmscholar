@@ -34,7 +34,7 @@ if (cluster.isMaster) {
     const deleteDDBTable = require('./lib/deleteDDBTable');
     const validateItem = require('./lib/validateItem');
 
-    const sns = new AWS.SNS();
+    const sns = new AWS.SNS({ region: 'us-west-2' });
     const ddbTableName = 'jmscholar-db';
     const ddb = new AWS.DynamoDB({ region: 'us-west-2' });
 
@@ -71,12 +71,12 @@ if (cluster.isMaster) {
         if(validItem.valid){
             ddb.putItem({
                 'TableName': ddbTableName,
-                'Item': validItem.item,
-                'Expected': { email: { Exists: false } }
+                'Item': validItem.item
+                // 'Expected': { email: { Exists: false } }
             }, function(err, data) {
                 if (err) {
-                    const returnStatus = 500;
-                    // console.log(err);
+                    let returnStatus = 500;
+                    console.log(err);
 
                     if (err.code === 'ConditionalCheckFailedException') {
                         returnStatus = 409;
@@ -85,22 +85,25 @@ if (cluster.isMaster) {
                     console.log('DDB Error: ' + err);
                     res.status(returnStatus).send(err);
                 } else {
-                    sns.publish({
-                        'Message': 'Name: ' + name + "\r\nEmail: " + email
-                                            + "\r\nParticipating: " + participating,
-                        'Subject': 'New High School Request Form - JMScholar.org',
-                        'TopicArn': snsTopic
-                    }, function(err, data) {
-                        if (err) {
-                            res.status(500).end();
-                            console.log('SNS Error: ' + err);
-                        } else {
-                            res.status(201).end({
-                                message: 'Success?!',
-                                data: data
-                            });
-                        }
-                    });
+
+                    res.status(200).send(validItem.item);
+
+                    // sns.publish({
+                    //     'Message': 'Name: ' + name + "\r\nEmail: " + email
+                    //                         + "\r\nParticipating: " + participating,
+                    //     'Subject': 'New High School Request Form - JMScholar.org',
+                    //     'TopicArn': snsTopic
+                    // }, function(err, data) {
+                    //     if (err) {
+                    //         res.status(500).end();
+                    //         console.log('SNS Error: ' + err);
+                    //     } else {
+                    //         res.status(201).end({
+                    //             message: 'Success?!',
+                    //             data: data
+                    //         });
+                    //     }
+                    // });
                 }
             });
         } else {
@@ -116,7 +119,7 @@ if (cluster.isMaster) {
         res.status(201).send(`Response from '/register-student'!`)
     });
 
-    const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 8081;
 
     const server = app.listen(port, function () {
         console.log('Server running at http://127.0.0.1:' + port + '/');
