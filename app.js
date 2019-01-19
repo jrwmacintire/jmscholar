@@ -30,8 +30,6 @@ if (cluster.isMaster) {
 
     AWS.config.region = process.env.AWS_REGION;
 
-    const createDDBTable = require('./lib/createDDBTable');
-    const deleteDDBTable = require('./lib/deleteDDBTable');
     const validateItem = require('./lib/validateItem');
 
     const sns = new AWS.SNS({ region: 'us-west-2' });
@@ -55,49 +53,55 @@ if (cluster.isMaster) {
     });
 
     app.post('/register-hs', function(req, res) {
-        console.log('\nreq.body:\n', req.body);
-
-        const { name, email, phone, participating } = req.body;
+        // console.log('\nreq.body:\n', req.body);
 
         const validItem = validateItem(req.body);
 
         if(validItem.valid){
-            ddb.putItem({
-                'TableName': ddbTableName,
-                'Item': validItem.item
-                // 'Expected': { email: { Exists: false } }
-            }, function(err, data) {
-                if (err) {
-                    let returnStatus = 500;
-                    console.log(err);
+            const { name, email, phone, participating } = req.body;
+            // console.log(`name: ${name} | email: ${email} | phone: ${phone} | participating: ${participating}`);
 
-                    if (err.code === 'ConditionalCheckFailedException') {
-                        returnStatus = 409;
-                    }
-
-                    console.log('DDB Error: ' + err);
-                    res.status(returnStatus).send(err);
-                } else {
-
-                    res.status(200).send(validItem.item);
-
-                    // sns.publish({
-                    //     'Message': 'Name: ' + name + "\r\nEmail: " + email
-                    //                         + "\r\nParticipating: " + participating,
-                    //     'Subject': 'New High School Request Form - JMScholar.org',
-                    //     'TopicArn': snsTopic
-                    // }, function(err, data) {
-                    //     if (err) {
-                    //         res.status(500).end();
-                    //         console.log('SNS Error: ' + err);
-                    //     } else {
-                    //         res.status(201).end({
-                    //             message: 'Success?!',
-                    //             data: data
-                    //         });
-                    //     }
-                    // });
+            const queryParams = {
+                TableName: 'jmscholar.db',
+                KeyConditionExpression: '#dbEmail = :inputEmail',
+                ExpressionAttributeNames: {
+                    '#dbEmail': 'email'
+                },
+                ExpressionAttributeValues: {
+                    ':inputEmail': { 'S': email }
                 }
+            };
+            ddb.query(queryParams, (err, data) => {
+                if(err) {
+                    if(err.code == 'ResourceNotFoundException') {
+                        console.log(`'${email}' not found in DB!`);
+                        ddb.putItem({
+                            'TableName': ddbTableName,
+                            'Item': validItem.item
+                            // 'Expected': { email: { Exists: false } }
+                        }, function(err, data) {
+                            if (err) {
+                                let returnStatus = 500;
+                                console.log(err);
+
+                                if (err.code === 'ConditionalCheckFailedException') {
+                                    returnStatus = 409;
+                                }
+
+                                console.log('DDB Error: ' + err);
+                                res.status(returnStatus).send(err);
+                            } else {
+                                // Item was saved to the database!
+                                res.status(200).send(validItem.item);
+                            }
+                        });
+                    }
+                }
+                else {
+                    console.log('Query succeeded!');
+                    data.Items.forEach(item => console.log(' -', item.email + ': ' + item.name));
+                }
+
             });
         } else {
             res.status(400).send({
