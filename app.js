@@ -54,7 +54,7 @@ if (cluster.isMaster) {
 
     app.post('/register-hs', function(req, res) {
         // console.log('\nreq.body:\n', req.body);
-
+        const hsReqFormTable = 'HSReqForms';
         const validItem = validateItem(req.body);
 
         if(validItem.valid){
@@ -62,7 +62,7 @@ if (cluster.isMaster) {
             // console.log(`name: ${name} | email: ${email} | phone: ${phone} | participating: ${participating}`);
 
             const queryParams = {
-                TableName: 'jmscholar.db',
+                TableName: hsReqFormTable,
                 KeyConditionExpression: '#dbEmail = :inputEmail',
                 ExpressionAttributeNames: {
                     '#dbEmail': 'email'
@@ -73,33 +73,26 @@ if (cluster.isMaster) {
             };
             ddb.query(queryParams, (err, data) => {
                 if(err) {
-                    if(err.code == 'ResourceNotFoundException') {
-                        console.log(`'${email}' not found in DB!`);
-                        ddb.putItem({
-                            'TableName': ddbTableName,
-                            'Item': validItem.item
-                            // 'Expected': { email: { Exists: false } }
-                        }, function(err, data) {
-                            if (err) {
-                                let returnStatus = 500;
-                                console.log(err);
-
-                                if (err.code === 'ConditionalCheckFailedException') {
-                                    returnStatus = 409;
-                                }
-
-                                console.log('DDB Error: ' + err);
-                                res.status(returnStatus).send(err);
-                            } else {
-                                // Item was saved to the database!
-                                res.status(200).send(validItem.item);
-                            }
-                        });
-                    }
-                }
-                else {
+                    console.error(`Error while reading '${hsReqFormTable}'`, err);
+                } else {
                     console.log('Query succeeded!');
-                    data.Items.forEach(item => console.log(' -', item.email + ': ' + item.name));
+                    const queryLength = data.Items.length;
+                    if(queryLength == 0) {
+                        console.log('Current email not found in query. PUTting item to database.');
+                        const putParams = {
+                            TableName: hsReqFormTable,
+                            Item: validItem.item
+                        };
+                        ddb.putItem(putParams, (err, data) => {
+                            if(err) console.error(`Error while putting item in ${hsReqFormTable}`, err);
+                            // Added item to database!
+                            else console.log(`Success adding ${email} into ${hsReqFormTable}!\n`, data);
+                        });
+                    } else {
+                        // TODO: Send notification of duplicate 'email' in database
+                        console.log(`Query returned ${queryLength} queries from ${hsReqFormTable}.`);
+                        data.Items.forEach(item => console.log(item));
+                    }
                 }
 
             });
