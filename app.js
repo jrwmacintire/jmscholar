@@ -38,13 +38,6 @@ if (cluster.isMaster) {
     const ddbTableName = 'jmscholar-db';
     const ddb = new AWS.DynamoDB({ region: 'us-west-2' });
 
-    // createDDBTable(ddb, ddbTableName);
-    // deleteDDBTable(ddb, ddbTableName);
-    // ddb.listTables({ Limit: 5 }, (err, data) => {
-    //     if(err) console.error('Error listing DB tables.', err);
-    //     else console.log('\nListing DB tables:\n', data.tableNames);
-    // });
-
     const snsTopic =  process.env.NEW_SIGNUP_TOPIC;
     const app = express();
 

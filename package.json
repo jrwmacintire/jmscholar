@@ -3,8 +3,9 @@
   "version": "1.1.4",
   "private": true,
   "dependencies": {
-    "body-parser": "latest",
-    "express": "latest",
+    "aws-sdk": "^2.390.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
     "shortid": "^2.2.14"
   },
   "scripts": {
