@@ -6,8 +6,9 @@
     "aws-sdk": "^2.390.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
-    "shortid": "^2.2.14",
-    "pug": "^2.0.3"
+    "express-fileupload": "^1.1.1-alpha.1",
+    "pug": "^2.0.3",
+    "shortid": "^2.2.14"
   },
   "scripts": {
     "start": "node app.js",

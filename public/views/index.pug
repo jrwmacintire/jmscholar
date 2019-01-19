@@ -96,55 +96,68 @@ html(lang='en')
         //-     div(class="form-group")
         //-         button(type='submit' class='btn btn-primary') Submit (HSRF)
     
-    form(action='/register-student' method='POST')
+    //- form(action='/register-student' method='POST')
+    //-     div.form-group
+    //-         label(for="name") Name:
+    //-         input(type="text" class="form-control" name="name" required)
+    //-     div.form-group
+    //-         label(for="email") Email:
+    //-         input(type="text" class="form-control" name="email" required)
+    //-     div.form-group
+    //-         label(for="phone") Phone:
+    //-         input(type="text" class="form-control" name="phone" required)
+    //-     div.form-group
+    //-         label(for="birthyear") Birthyear:
+    //-         select.form-control(name="birthyear")
+    //-             option(value="After 2002") After 2001
+    //-             option(value="2002") 2002
+    //-             option(value="2001") 2001
+    //-             option(value="2000") 2000
+    //-             option(value="1999") 1999
+    //-             option(value="Before 1999") Before 1999
+    //-     div.form-group
+    //-         label(for="citizen") Are you a U.S. citizen?
+    //-         input(type="radio" name="citizen" value="Yes") 
+    //-         input(type="radio" name="citizen" value="No")
+    //-     div.form-group
+    //-         label(for="schoolName") School Name:
+    //-         input(type="text" class="form-control" name="schoolName" required)
+    //-     div.form-group
+    //-         label(for="schoolCode") School Code:
+    //-         input(type="text" class="form-control" name="schoolCode" required)
+    //-     div.form-group
+    //-         label(for="address") Street Address:
+    //-         input(type="text" class="form-control" name="address" required)
+    //-     div.form-group
+    //-         label(for="city") City:
+    //-         input(type="text" class="form-control" name="city" required)
+    //-     div.form-group
+    //-         label(for="state") State:
+    //-         select.form-control(name="state")
+    //-             option(value="Arizona") Arizona
+    //-     div.form-group
+    //-         label(for="teacher") Teacher's Name:
+    //-         input(type="text" class="form-control" name="teacher" required)
+    //-     div.form-group
+    //-         label(for='participating') Participating: 
+    //-         select(name='participating' required)
+    //-             option(value='participating') 'Participating'
+    //-             option(value='non-participating') Not 'Participating'
+    //- 
+    //-     button(type='submit') Submit (Student)
+            
+    form(action="/upload-essay" method="POST" enctype="multipart/form-data")
         div.form-group
             label(for="name") Name:
-            input(type="text" class="form-control" name="name" required)
+            input(type="text" name="name" class="form-control")
         div.form-group
-            label(for="email") Email:
-            input(type="text" class="form-control" name="email" required)
+            label(for="id") User ID:
+            input(type="text" name="id" class="form-control")
         div.form-group
-            label(for="phone") Phone:
-            input(type="text" class="form-control" name="phone" required)
+            label(for="file") Upload File:
+            input(type="file" name="file" class="form-control")
         div.form-group
-            label(for="birthyear") Birthyear:
-            select.form-control(name="birthyear")
-                option(value="After 2002") After 2001
-                option(value="2002") 2002
-                option(value="2001") 2001
-                option(value="2000") 2000
-                option(value="1999") 1999
-                option(value="Before 1999") Before 1999
-        div.form-group
-            label(for="citizen") Are you a U.S. citizen?
-            input(type="radio" name="citizen" value="Yes") 
-            input(type="radio" name="citizen" value="No")
-        div.form-group
-            label(for="schoolName") School Name:
-            input(type="text" class="form-control" name="schoolName" required)
-        div.form-group
-            label(for="schoolCode") School Code:
-            input(type="text" class="form-control" name="schoolCode" required)
-        div.form-group
-            label(for="address") Street Address:
-            input(type="text" class="form-control" name="address" required)
-        div.form-group
-            label(for="city") City:
-            input(type="text" class="form-control" name="city" required)
-        div.form-group
-            label(for="state") State:
-            select.form-control(name="state")
-                option(value="Arizona") Arizona
-        div.form-group
-            label(for="teacher") Teacher's Name:
-            input(type="text" class="form-control" name="teacher" required)
-        div.form-group
-            label(for='participating') Participating: 
-            select(name='participating' required)
-                option(value='participating') 'Participating'
-                option(value='non-participating') Not 'Participating'
-    
-        button(type='submit') Submit (Student)
-            
+            button(type="submit") Submit (Essay)
+        
         
     script(src='../scripts/script.js')

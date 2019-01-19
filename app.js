@@ -25,6 +25,7 @@ if (cluster.isMaster) {
 } else {
     const AWS = require('aws-sdk');
     const express = require('express');
+    const expressFileUploader = require('express-fileupload');
     const bodyParser = require('body-parser');
     const path = require('path');
 
@@ -42,6 +43,7 @@ if (cluster.isMaster) {
     app.set('view engine', 'pug');
     app.set('views', './public/views');
     app.use(express.static(__dirname + '/public'));
+    app.use(expressFileUploader());
     app.use(bodyParser.urlencoded({extended:false}));
 
     app.get('/', function(req, res) {
@@ -147,8 +149,12 @@ if (cluster.isMaster) {
         } else {
             console.log('Trouble validating the item for StudentForms!');
         }
-
         // res.status(201).send(`Response from '/register-student'!`)
+    });
+
+    app.post('/upload-essay', (req, res) => {
+        console.log(`Received POST at '/upload-essay'!`, req.files.file);
+        res.status(200).send(req.files);
     });
 
     const port = process.env.PORT || 8081;
