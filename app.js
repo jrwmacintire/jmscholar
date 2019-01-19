@@ -105,8 +105,50 @@ if (cluster.isMaster) {
     });
 
     app.post('/register-student', (req, res) => {
-        console.log(`\nReceived POST request at '/register-student'!`, '\nreq.body:\n', req.body);
-        res.status(201).send(`Response from '/register-student'!`)
+        // console.log(`\nReceived POST request at '/register-student'!`, '\nreq.body:\n', req.body);
+
+        const studentFormsTable = 'StudentForms';
+        const validItem = validateItem(req.body);
+
+        if(validItem.valid) {
+            const { name, email, phone, participating } = req.body;
+            // console.log(`Item appears to be valid!\nvalidItem.item:\n`, validItem.item);
+            const queryParams = {
+                TableName: studentFormsTable,
+                KeyConditionExpression: '#dbEmail = :inputEmail',
+                ExpressionAttributeNames: {
+                    '#dbEmail': 'email'
+                },
+                ExpressionAttributeValues: {
+                    ':inputEmail': { 'S': email }
+                }
+            };
+            ddb.query(queryParams, (err, data) => {
+                if(err) console.error(`Error querying ${studentFormsTable}`, err);
+                else {
+                    // console.log(`Query returned!\ndata.Items:\n`, data.Items);
+                    const queryLength = data.Items.length;
+                    if(queryLength == 0) {
+                        console.log(`Query for ${email} returned no existing items.`);
+                        const putParams = {
+                            TableName: studentFormsTable,
+                            Item: validItem.item
+                        }
+                        ddb.putItem(putParams, (err, data) => {
+                            if(err) console.error(`Error adding ${email} to database!\n`, err);
+                            else console.log(`Added ${email} to database!`);
+                        });
+                    } else {
+                        console.log(`Query returned ${queryLength} results.`);
+                        data.Items.forEach(item => console.log(item));
+                    }
+                }
+            });
+        } else {
+            console.log('Trouble validating the item for StudentForms!');
+        }
+
+        // res.status(201).send(`Response from '/register-student'!`)
     });
 
     const port = process.env.PORT || 8081;
