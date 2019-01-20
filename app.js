@@ -28,6 +28,7 @@ if (cluster.isMaster) {
     const expressFileUploader = require('express-fileupload');
     const bodyParser = require('body-parser');
     const path = require('path');
+    const helmet = require('helmet');
 
     AWS.config.region = process.env.AWS_REGION;
 
@@ -40,6 +41,7 @@ if (cluster.isMaster) {
     const snsTopic =  process.env.NEW_SIGNUP_TOPIC;
     const app = express();
 
+    app.use(helmet());
     app.set('view engine', 'pug');
     app.set('views', './public/views');
     app.use(express.static(__dirname + '/public'));
@@ -77,10 +79,10 @@ if (cluster.isMaster) {
                 if(err) {
                     console.error(`Error while reading '${hsReqFormTable}'`, err);
                 } else {
-                    console.log('Query succeeded!');
+                    // console.log('Query succeeded!');
                     const queryLength = data.Items.length;
                     if(queryLength == 0) {
-                        console.log('Current email not found in query. PUTting item to database.');
+                        // console.log('Current email not found in query. PUTting item to database.');
                         const putParams = {
                             TableName: hsReqFormTable,
                             Item: validItem.item
@@ -92,7 +94,7 @@ if (cluster.isMaster) {
                         });
                     } else {
                         // TODO: Send notification of duplicate 'email' in database
-                        console.log(`Query returned ${queryLength} queries from ${hsReqFormTable}.`);
+                        // console.log(`Query returned ${queryLength} queries from ${hsReqFormTable}.`);
                         data.Items.forEach(item => console.log(item));
                     }
                 }
@@ -131,7 +133,7 @@ if (cluster.isMaster) {
                     // console.log(`Query returned!\ndata.Items:\n`, data.Items);
                     const queryLength = data.Items.length;
                     if(queryLength == 0) {
-                        console.log(`Query for ${email} returned no existing items.`);
+                        // console.log(`Query for ${email} returned no existing items.`);
                         const putParams = {
                             TableName: studentFormsTable,
                             Item: validItem.item
@@ -141,7 +143,7 @@ if (cluster.isMaster) {
                             else console.log(`Added ${email} to database!`);
                         });
                     } else {
-                        console.log(`Query returned ${queryLength} results.`);
+                        // console.log(`Query returned ${queryLength} results.`);
                         data.Items.forEach(item => console.log(item));
                     }
                 }
