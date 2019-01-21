@@ -156,7 +156,14 @@ if (cluster.isMaster) {
 
     app.post('/upload-essay', (req, res) => {
         console.log(`Received POST at '/upload-essay'!`, req.files.file);
-        res.status(200).send(req.files);
+        const { name, mimetype } = req.files.file;
+        
+        res.status(200).send(
+            {
+                name: name,
+                mimetype: mimetype
+            }
+        );
     });
 
     const port = process.env.PORT || 8081;
