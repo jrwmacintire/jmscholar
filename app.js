@@ -29,10 +29,12 @@ if (cluster.isMaster) {
     const bodyParser = require('body-parser');
     const path = require('path');
     const helmet = require('helmet');
+    const shortid = require('shortid');
 
     AWS.config.region = process.env.AWS_REGION;
 
     const validateItem = require('./lib/validateItem');
+    const validateEssaySubmission = require('./lib/validateEssaySubmission');
 
     const sns = new AWS.SNS({ region: 'us-west-2' });
     const ddbTableName = 'jmscholar-db';
@@ -155,15 +157,52 @@ if (cluster.isMaster) {
     });
 
     app.post('/upload-essay', (req, res) => {
-        console.log(`Received POST at '/upload-essay'!`, req.files.file);
-        const { name, mimetype } = req.files.file;
-        
-        res.status(200).send(
-            {
-                name: name,
-                mimetype: mimetype
+        console.log(`\nReceived POST at '/upload-essay'!`);
+        const { name, id, email } = req.body;
+        // console.log(`name: ${name} | id: ${id} | email: ${email}`);
+        const file = req.files.file;
+        const filename = file.name,
+              mimetype = file.mimetype;
+        const essaySubmissions = 'EssaySubmissions';
+        const validEssaySubmission = validateEssaySubmission(file);
+        console.log('file:\n', file);
+
+        // convert Buffer to string for storage
+        const bufferString = file.data.toString();
+        const essayObject = {
+            essayId: { "S": shortid.generate() },
+            mimetype: { "S": mimetype },
+            filename: { "S": filename },
+            fileBuffer: { "S": bufferString }
+        };
+
+        const queryParams = {
+            TableName: essaySubmissions,
+            KeyConditionExpression: '#dbEmail = :inputEmail',
+            ExpressionAttributeNames: {
+                '#dbEmail': 'email'
+            },
+            ExpressionAttributeValues: {
+                ':inputEmail': { 'S': email }
             }
-        );
+        };
+        ddb.query(queryParams, (err, data) => {
+            // console.log(data);
+            const length = data.Items.length;
+
+            if(err) {
+                console.error(`Error while reading '${essaySubmissions}'`, err);
+            } else {
+                console.log(`\n'EssaySubmissions' queries:\n`, data);
+                if(validEssaySubmission) {
+                    res.status(200).send(essayObject);
+                } else {
+                    res.status(400).send({
+                        error: 'Essay submission contained an invalid name or mimetype.'
+                    });
+                }
+            }
+        });
     });
 
     const port = process.env.PORT || 8081;
