@@ -37,7 +37,7 @@ if (cluster.isMaster) {
     const validateEssaySubmission = require('./lib/validateEssaySubmission');
 
     const sns = new AWS.SNS({ region: 'us-west-2' });
-    const ddbTableName = 'jmscholar-db';
+    const ddbTableName = 'MasterTable';
     const ddb = new AWS.DynamoDB({ region: 'us-west-2' });
 
     const snsTopic =  process.env.NEW_SIGNUP_TOPIC;
@@ -60,7 +60,6 @@ if (cluster.isMaster) {
 
     app.post('/register-hs', function(req, res) {
         // console.log('\nreq.body:\n', req.body);
-        const hsReqFormTable = 'HSReqForms';
         const validItem = validateItem(req.body);
 
         if(validItem.valid){
@@ -68,7 +67,7 @@ if (cluster.isMaster) {
             // console.log(`name: ${name} | email: ${email} | phone: ${phone} | participating: ${participating}`);
 
             const queryParams = {
-                TableName: hsReqFormTable,
+                TableName: ddbTableName,
                 KeyConditionExpression: '#dbEmail = :inputEmail',
                 ExpressionAttributeNames: {
                     '#dbEmail': 'email'
@@ -79,24 +78,24 @@ if (cluster.isMaster) {
             };
             ddb.query(queryParams, (err, data) => {
                 if(err) {
-                    console.error(`Error while reading '${hsReqFormTable}'`, err);
+                    console.error(`Error while reading '${ddbTableName}'`, err);
                 } else {
                     // console.log('Query succeeded!');
                     const queryLength = data.Items.length;
                     if(queryLength == 0) {
                         // console.log('Current email not found in query. PUTting item to database.');
                         const putParams = {
-                            TableName: hsReqFormTable,
+                            TableName: ddbTableName,
                             Item: validItem.item
                         };
                         ddb.putItem(putParams, (err, data) => {
-                            if(err) console.error(`Error while putting item in ${hsReqFormTable}`, err);
+                            if(err) console.error(`Error while putting item in ${ddbTableName}`, err);
                             // Added item to database!
-                            else console.log(`Success adding ${email} into ${hsReqFormTable}!\n`, data);
+                            else console.log(`Success adding ${email} into ${ddbTableName}!\n`, data);
                         });
                     } else {
                         // TODO: Send notification of duplicate 'email' in database
-                        // console.log(`Query returned ${queryLength} queries from ${hsReqFormTable}.`);
+                        // console.log(`Query returned ${queryLength} queries from ${ddbTableName}.`);
                         data.Items.forEach(item => console.log(item));
                     }
                 }
@@ -113,14 +112,13 @@ if (cluster.isMaster) {
     app.post('/register-student', (req, res) => {
         // console.log(`\nReceived POST request at '/register-student'!`, '\nreq.body:\n', req.body);
 
-        const studentFormsTable = 'StudentForms';
         const validItem = validateItem(req.body);
 
         if(validItem.valid) {
             const { name, email, phone, participating } = req.body;
             // console.log(`Item appears to be valid!\nvalidItem.item:\n`, validItem.item);
             const queryParams = {
-                TableName: studentFormsTable,
+                TableName: ddbTableName,
                 KeyConditionExpression: '#dbEmail = :inputEmail',
                 ExpressionAttributeNames: {
                     '#dbEmail': 'email'
@@ -130,14 +128,14 @@ if (cluster.isMaster) {
                 }
             };
             ddb.query(queryParams, (err, data) => {
-                if(err) console.error(`Error querying ${studentFormsTable}`, err);
+                if(err) console.error(`Error querying ${ddbTableName}`, err);
                 else {
                     // console.log(`Query returned!\ndata.Items:\n`, data.Items);
                     const queryLength = data.Items.length;
                     if(queryLength == 0) {
                         // console.log(`Query for ${email} returned no existing items.`);
                         const putParams = {
-                            TableName: studentFormsTable,
+                            TableName: ddbTableName,
                             Item: validItem.item
                         }
                         ddb.putItem(putParams, (err, data) => {
@@ -151,7 +149,7 @@ if (cluster.isMaster) {
                 }
             });
         } else {
-            console.log('Trouble validating the item for StudentForms!');
+            console.log('Trouble validating the item student form!');
         }
         // res.status(201).send(`Response from '/register-student'!`)
     });
@@ -163,21 +161,37 @@ if (cluster.isMaster) {
         const file = req.files.file;
         const filename = file.name,
               mimetype = file.mimetype;
-        const essaySubmissions = 'EssaySubmissions';
+
         const validEssaySubmission = validateEssaySubmission(file);
         console.log('file:\n', file);
 
         // convert Buffer to string for storage
         const bufferString = file.data.toString();
         const essayObject = {
+            email: { "S": email },
             essayId: { "S": shortid.generate() },
             mimetype: { "S": mimetype },
             filename: { "S": filename },
             fileBuffer: { "S": bufferString }
         };
 
+        const updateParams = {
+            TableName: ddbTableName,
+            Key: {
+                "email": { "S": email }
+            },
+            UpdateExpression: "set #essays = :essay",
+            ExpressionAttributeNames: {
+                '#essays': 'essays'
+            },
+            ExpressionAttributeValues: {
+                ":essay": { 'S': JSON.stringify(essayObject)}
+            },
+            ReturnValues: 'ALL_NEW'
+        }
+
         const queryParams = {
-            TableName: essaySubmissions,
+            TableName: ddbTableName,
             KeyConditionExpression: '#dbEmail = :inputEmail',
             ExpressionAttributeNames: {
                 '#dbEmail': 'email'
@@ -189,12 +203,17 @@ if (cluster.isMaster) {
         ddb.query(queryParams, (err, data) => {
             // console.log(data);
             const length = data.Items.length;
+            // console.log(`data: ${data}`);
 
             if(err) {
-                console.error(`Error while reading '${essaySubmissions}'`, err);
+                console.error(`Error while reading '${ddbTableName}'`, err);
             } else {
-                console.log(`\n'EssaySubmissions' queries:\n`, data);
+                console.log(`\n'${ddbTableName}' queries:\n`, data);
                 if(validEssaySubmission) {
+                    ddb.updateItem(updateParams, (err, data) => {
+                        if(err) console.error(`\nUnable to update '${email}' item. Error JSON:\n`, JSON.stringify(err, null, 2));
+                        else console.log(`UpdatedItem succeeded:\n`, JSON.stringify(data, null, 2));
+                    })
                     res.status(200).send(essayObject);
                 } else {
                     res.status(400).send({
@@ -202,6 +221,10 @@ if (cluster.isMaster) {
                     });
                 }
             }
+            // res.status(200).send({
+            //     tableName: ddbTableName,
+            //     queryLength: length
+            // });
         });
     });
 
