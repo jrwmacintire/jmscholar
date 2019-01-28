@@ -106,7 +106,6 @@ if (cluster.isMaster) {
     app.post('/register-student', (req, res) => {
         // console.log(`\nReceived POST request at '/register-student'!`, '\nreq.body:\n', req.body);
         let validItem = validateItem(req.body, 'student');
-        validItem['accountType'] = 'student';
 
         if(validItem.valid) {
             const { name, email, phone, participating } = req.body;
