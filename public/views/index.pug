@@ -97,54 +97,87 @@ html(lang='en')
         //-         button(type='submit' class='btn btn-primary') Submit (HSRF)
     
     form(action='/register-student' method='POST')
-        div.form-group
-            label(for="name") Name:
-            input(type="text" class="form-control" name="name" required)
-        div.form-group
-            label(for="email") Email:
-            input(type="text" class="form-control" name="email" required)
-        div.form-group
-            label(for="phone") Phone:
-            input(type="text" class="form-control" name="phone" required)
-        div.form-group
-            label(for="birthyear") Birthyear:
-            select.form-control(name="birthyear")
-                option(value="After 2002") After 2001
-                option(value="2002") 2002
-                option(value="2001") 2001
-                option(value="2000") 2000
-                option(value="1999") 1999
-                option(value="Before 1999") Before 1999
-        div.form-group
-            label(for="citizen") Are you a U.S. citizen?
-            input(type="radio" name="citizen" value="Yes") 
-            input(type="radio" name="citizen" value="No")
-        div.form-group
-            label(for="schoolName") School Name:
-            input(type="text" class="form-control" name="schoolName" required)
-        div.form-group
-            label(for="schoolCode") School Code:
-            input(type="text" class="form-control" name="schoolCode" required)
-        div.form-group
-            label(for="address") Street Address:
-            input(type="text" class="form-control" name="address" required)
-        div.form-group
-            label(for="city") City:
-            input(type="text" class="form-control" name="city" required)
-        div.form-group
-            label(for="state") State:
-            select.form-control(name="state")
-                option(value="Arizona") Arizona
-        div.form-group
-            label(for="teacher") Teacher's Name:
-            input(type="text" class="form-control" name="teacher" required)
-        div.form-group
-            label(for='participating') Participating: 
-            select(name='participating' required)
-                option(value='participating') 'Participating'
-                option(value='non-participating') Not 'Participating'
-    
-        button(type='submit') Submit (Student)
+        .form-group
+            label(for='firstName') First Name:
+            input.form-control(name='firstName' required='required' type='text')
+        .form-group
+            label(for='middleName') Middle Name:
+            input.form-control(name='middleName' required='no' type='text')
+        .form-group
+            label(for='lastName') Last Name:
+            input.form-control(name='lastName' required='required' type='text')
+        .form-group
+            label(for='email') Email:
+            input.form-control(name='email' required='required' type='text')
+        .form-group
+            label(for='phone') Phone Number:
+            input.form-control(name='phone' required='required' type='text')
+        .form-group
+            label(for='birthyear') Year of Your Birth:
+            select.form-control(name='birthyear')
+                option(value='After 2002') After 2002
+                option(value='2002') 2002
+                option(value='2001') 2001
+                option(value='2000') 2000
+                option(value='1999') 1999
+                option(value='Before 1999') Before 1999 | Students born after 2002 are not eligible.  See 
+                a(href='https://www.jmscholar.org/james-madison-scholarship-guidelines-for-2019/')
+                    b Rules
+                    | Section II.
+                    br
+        .form-group
+            label(for='graduating') Are you a Senior in High School?
+            select#student-application-form-2-ARE_YOU_A_SENIOR_IN_HIGH_SCHOOL(name='graduating' required)
+                option Yes
+                option No
+                small The 2019 Madison Essay Competition is open only to Seniors who are eligible to graduate. See 
+                a(href='https://www.jmscholar.org/james-madison-scholarship-guidelines-for-2019/')
+                b Rules Section II.
+        .form-group
+            label Are you a US citizen?
+            label(for='citizen') Yes
+            input(name='citizen' value='yes' type='radio')
+            label(for='citizen') No
+            input(name='citizen' value='no' type='radio')
+        .form-group
+            label(for='schoolName') Your School Name:
+            input.form-control(name='schoolName' required='required' type='text')
+        .form-group
+            label(for='schoolCode') School Code:
+            input.form-control(name='schoolCode' required='required' type='text')
+        .form-group
+            label(for='address') School Street Address:
+            input.form-control(name='address' required='required' type='text')
+        .form-group
+            label(for='city') School City:
+            input.form-control(name='city' required='required' type='text')
+        .form-group
+            label(for='state') School State:
+            select.form-control(name='state')
+                option(value='Arizona') Arizona
+        .form-group
+            label(for='teacher') Teacher Name:
+            input.form-control(name='teacher' required='required' type='text')
+            | Name of the Teacher you will be receiving extra credit from (if applicable).
+        .form-group
+            label(for='participating') Are you a Student at a Particpating School?: 
+            select(name='participating' required='required')
+                option(value='participating') Yes
+                option(value='non-participating') No
+                
+        b Read and Verify
+        p By checking I AGREE below and submitting this form, I authorize the 2019 James Madison Essay Competition and the James Madison Forum to share and publish all or any portion of this Application to my high school, and I authorize and request that my high school provide any and all information in my student file, including my transcript and eligibility to graduate to the Executive Committee and the Director of the James Madison Essay Competition.
+            
+        p I have read and I agree to comply with all of the 
+        a(href='https://www.jmscholar.org/james-madison-scholarship-guidelines-for-2019/')
+        b Rules and Regulations.
+        p All of the statements in this Application are true and correct.
+        .form-group
+            label(for='terms') I agree.
+            input(type='checkbox' name='terms' value='agree')
+            
+        .form-group
+            button(type='submit') Submit
             
         
     script(src='../scripts/script.js')

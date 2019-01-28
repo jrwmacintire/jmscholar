@@ -33,7 +33,7 @@ if (cluster.isMaster) {
     const validateItem = require('./lib/validateItem');
 
     const sns = new AWS.SNS({ region: 'us-west-2' });
-    const ddbTableName = 'jmscholar-db';
+    const ddbTableName = 'MasterTable';
     const ddb = new AWS.DynamoDB({ region: 'us-west-2' });
 
     const snsTopic =  process.env.NEW_SIGNUP_TOPIC;
@@ -54,7 +54,6 @@ if (cluster.isMaster) {
 
     app.post('/register-hs', function(req, res) {
         // console.log('\nreq.body:\n', req.body);
-        const hsReqFormTable = 'HSReqForms';
         const validItem = validateItem(req.body);
 
         if(validItem.valid){
@@ -62,7 +61,7 @@ if (cluster.isMaster) {
             // console.log(`name: ${name} | email: ${email} | phone: ${phone} | participating: ${participating}`);
 
             const queryParams = {
-                TableName: hsReqFormTable,
+                TableName: masterTable,
                 KeyConditionExpression: '#dbEmail = :inputEmail',
                 ExpressionAttributeNames: {
                     '#dbEmail': 'email'
@@ -73,24 +72,24 @@ if (cluster.isMaster) {
             };
             ddb.query(queryParams, (err, data) => {
                 if(err) {
-                    console.error(`Error while reading '${hsReqFormTable}'`, err);
+                    console.error(`Error while reading '${masterTable}'`, err);
                 } else {
                     console.log('Query succeeded!');
                     const queryLength = data.Items.length;
                     if(queryLength == 0) {
                         console.log('Current email not found in query. PUTting item to database.');
                         const putParams = {
-                            TableName: hsReqFormTable,
+                            TableName: masterTable,
                             Item: validItem.item
                         };
                         ddb.putItem(putParams, (err, data) => {
-                            if(err) console.error(`Error while putting item in ${hsReqFormTable}`, err);
+                            if(err) console.error(`Error while putting item in ${masterTable}`, err);
                             // Added item to database!
-                            else console.log(`Success adding ${email} into ${hsReqFormTable}!\n`, data);
+                            else console.log(`Success adding ${email} into ${masterTable}!\n`, data);
                         });
                     } else {
                         // TODO: Send notification of duplicate 'email' in database
-                        console.log(`Query returned ${queryLength} queries from ${hsReqFormTable}.`);
+                        console.log(`Query returned ${queryLength} queries from ${masterTable}.`);
                         data.Items.forEach(item => console.log(item));
                     }
                 }
@@ -106,15 +105,14 @@ if (cluster.isMaster) {
 
     app.post('/register-student', (req, res) => {
         // console.log(`\nReceived POST request at '/register-student'!`, '\nreq.body:\n', req.body);
-
-        const studentFormsTable = 'StudentForms';
         const validItem = validateItem(req.body);
+        validItem['accountType'] = 'student';
 
         if(validItem.valid) {
             const { name, email, phone, participating } = req.body;
             // console.log(`Item appears to be valid!\nvalidItem.item:\n`, validItem.item);
             const queryParams = {
-                TableName: studentFormsTable,
+                TableName: masterTable,
                 KeyConditionExpression: '#dbEmail = :inputEmail',
                 ExpressionAttributeNames: {
                     '#dbEmail': 'email'
@@ -124,14 +122,14 @@ if (cluster.isMaster) {
                 }
             };
             ddb.query(queryParams, (err, data) => {
-                if(err) console.error(`Error querying ${studentFormsTable}`, err);
+                if(err) console.error(`Error querying ${masterTable}`, err);
                 else {
                     // console.log(`Query returned!\ndata.Items:\n`, data.Items);
                     const queryLength = data.Items.length;
                     if(queryLength == 0) {
                         console.log(`Query for ${email} returned no existing items.`);
                         const putParams = {
-                            TableName: studentFormsTable,
+                            TableName: masterTable,
                             Item: validItem.item
                         }
                         ddb.putItem(putParams, (err, data) => {
