@@ -54,14 +54,14 @@ if (cluster.isMaster) {
 
     app.post('/register-hs', function(req, res) {
         // console.log('\nreq.body:\n', req.body);
-        const validItem = validateItem(req.body);
+        const validItem = validateItem(req.body, 'school-rep');
 
         if(validItem.valid){
             const { name, email, phone, participating } = req.body;
             // console.log(`name: ${name} | email: ${email} | phone: ${phone} | participating: ${participating}`);
 
             const queryParams = {
-                TableName: masterTable,
+                TableName: ddbTableName,
                 KeyConditionExpression: '#dbEmail = :inputEmail',
                 ExpressionAttributeNames: {
                     '#dbEmail': 'email'
@@ -72,24 +72,24 @@ if (cluster.isMaster) {
             };
             ddb.query(queryParams, (err, data) => {
                 if(err) {
-                    console.error(`Error while reading '${masterTable}'`, err);
+                    console.error(`Error while reading '${ddbTableName}'`, err);
                 } else {
                     console.log('Query succeeded!');
                     const queryLength = data.Items.length;
                     if(queryLength == 0) {
                         console.log('Current email not found in query. PUTting item to database.');
                         const putParams = {
-                            TableName: masterTable,
+                            TableName: ddbTableName,
                             Item: validItem.item
                         };
                         ddb.putItem(putParams, (err, data) => {
-                            if(err) console.error(`Error while putting item in ${masterTable}`, err);
+                            if(err) console.error(`Error while putting item in ${ddbTableName}`, err);
                             // Added item to database!
-                            else console.log(`Success adding ${email} into ${masterTable}!\n`, data);
+                            else console.log(`Success adding ${email} into ${ddbTableName}!\n`, data);
                         });
                     } else {
                         // TODO: Send notification of duplicate 'email' in database
-                        console.log(`Query returned ${queryLength} queries from ${masterTable}.`);
+                        console.log(`Query returned ${queryLength} queries from ${ddbTableName}.`);
                         data.Items.forEach(item => console.log(item));
                     }
                 }
@@ -105,14 +105,14 @@ if (cluster.isMaster) {
 
     app.post('/register-student', (req, res) => {
         // console.log(`\nReceived POST request at '/register-student'!`, '\nreq.body:\n', req.body);
-        const validItem = validateItem(req.body);
+        let validItem = validateItem(req.body, 'student');
         validItem['accountType'] = 'student';
 
         if(validItem.valid) {
             const { name, email, phone, participating } = req.body;
             // console.log(`Item appears to be valid!\nvalidItem.item:\n`, validItem.item);
             const queryParams = {
-                TableName: masterTable,
+                TableName: ddbTableName,
                 KeyConditionExpression: '#dbEmail = :inputEmail',
                 ExpressionAttributeNames: {
                     '#dbEmail': 'email'
@@ -122,14 +122,14 @@ if (cluster.isMaster) {
                 }
             };
             ddb.query(queryParams, (err, data) => {
-                if(err) console.error(`Error querying ${masterTable}`, err);
+                if(err) console.error(`Error querying ${ddbTableName}`, err);
                 else {
                     // console.log(`Query returned!\ndata.Items:\n`, data.Items);
                     const queryLength = data.Items.length;
                     if(queryLength == 0) {
                         console.log(`Query for ${email} returned no existing items.`);
                         const putParams = {
-                            TableName: masterTable,
+                            TableName: ddbTableName,
                             Item: validItem.item
                         }
                         ddb.putItem(putParams, (err, data) => {
