@@ -155,11 +155,12 @@ if (cluster.isMaster) {
 
     app.post('/upload-essay', (req, res) => {
         console.log(`\nReceived POST at '/upload-essay'!`);
-        const { name, id, email } = req.body;
+        const { firstName, middleName, lastName, id, email } = req.body;
         // console.log(`name: ${name} | id: ${id} | email: ${email}`);
         const file = req.files.file;
         const filename = file.name,
-              mimetype = file.mimetype;
+              mimetype = file.mimetype,
+              essayId = shortid.generate();
 
         const validEssaySubmission = validateEssaySubmission(file);
         console.log('file:\n', file);
@@ -167,27 +168,27 @@ if (cluster.isMaster) {
         // convert Buffer to string for storage
         // const bufferString = file.data.toString();
         const essayObject = {
-            essayId: { "S": shortid.generate() },
-            mimetype: { "S": mimetype },
-            filename: { "S": filename },
-            fileBuffer: { "B": file.data }
+            'essayId': { "S": essayId },
+            'author': { "S": firstName + ' ' + middleName + ' ' + lastName },
+            'mimetype': { "S": mimetype },
+            'filename': { "S": filename },
+            'fileBuffer': { "B": file.data },
+            'createdAt': { "S": new Date().toString() }
         };
 
         const updateParams = {
             TableName: ddbTableName,
             Key: {
                 "email": { "S": email },
-                "id": { "S": '3lynMe0xD' }
+                "id": { "S": id }
             },
-            UpdateExpression: "set #essays = list_append(#essays, :essay)",
+            UpdateExpression: "set #essayMap = :essayObj",
             ExpressionAttributeNames: {
-                '#essays': 'essays'
+                '#essayMap': 'essay'
             },
             ExpressionAttributeValues: {
-                ":essay": {
-                    "L": [
-                        { "B": file.data }
-                    ]
+                ":essayObj": {
+                    "M": essayObject
                 }
             },
             ReturnValues: 'ALL_NEW'
@@ -212,12 +213,21 @@ if (cluster.isMaster) {
                 console.error(`Error while reading '${ddbTableName}'`, err);
             } else {
                 console.log(`\n'${ddbTableName}' queries:\n`, data);
-                if(validEssaySubmission) {
-                    ddb.updateItem(updateParams, (err, data) => {
-                        if(err) console.error(`\nUnable to update '${email}' item. Error JSON:\n`, JSON.stringify(err, null, 2));
-                        else console.log(`UpdatedItem succeeded:\n`, JSON.stringify(data, null, 2));
+                const item = data.Items[0];
+                if(validEssaySubmission && data.Items.length > 0) {
+                    console.log(`item from DB query before update:\n`, item, '\n');
+                    if(item.id.S == id) {
+                        ddb.updateItem(updateParams, (err, data) => {
+                            if(err) console.error(`\nUnable to update '${email}' item. Error JSON:\n`,  JSON.stringify(err, null, 2));
+                            else {
+                                console.log(`UpdatedItem succeeded!!`);
+                                // console.log(JSON.stringify(data, null, 2) + '\n');
+                            }
+                        })
+                        res.status(200).send(essayObject);
+                    } else res.status(400).send({
+                        error: `Queried item's ID (${item.id.S}) did not match id: ${id})`
                     })
-                    res.status(200).send(essayObject);
                 } else {
                     res.status(400).send({
                         error: 'Essay submission contained an invalid name or mimetype.'
