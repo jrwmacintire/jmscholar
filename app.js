@@ -166,26 +166,30 @@ if (cluster.isMaster) {
         console.log('file:\n', file);
 
         // convert Buffer to string for storage
-        const bufferString = file.data.toString();
+        // const bufferString = file.data.toString();
         const essayObject = {
-            email: { "S": email },
             essayId: { "S": shortid.generate() },
             mimetype: { "S": mimetype },
             filename: { "S": filename },
-            fileBuffer: { "S": bufferString }
+            fileBuffer: { "B": file.data }
         };
 
         const updateParams = {
             TableName: ddbTableName,
             Key: {
-                "email": { "S": email }
+                "email": { "S": email },
+                "id": { "S": '3lynMe0xD' }
             },
-            UpdateExpression: "set #essays = :essay",
+            UpdateExpression: "set #essays = list_append(#essays, :essay)",
             ExpressionAttributeNames: {
                 '#essays': 'essays'
             },
             ExpressionAttributeValues: {
-                ":essay": { 'S': JSON.stringify(essayObject)}
+                ":essay": {
+                    "L": [
+                        { "B": file.data }
+                    ]
+                }
             },
             ReturnValues: 'ALL_NEW'
         }
