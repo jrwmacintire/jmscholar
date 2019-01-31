@@ -7,17 +7,44 @@ body {
   font-family: 'Roboto', sans-serif;
   text-align: center;
   padding: 30px; }
-  body h1 {
+  body div.header h1 {
+    text-align: center;
     font-size: 3rem; }
+  body div.header h2 {
+    text-align: center;
+    font-size: 1.8rem; }
   body form {
-    width: 32%;
+    width: 55%;
     margin: 3rem auto;
     padding: 2rem;
     border: 3px solid lightgrey;
     display: flex;
-    justify-content: center;
-    flex-direction: column; }
-    body form div.form-group label {
-      margin-right: 7px; }
-    body form div.form-group input {
-      margin: 5px; }
+    flex-flow: column wrap; }
+    body form div.essayOverwrite-group {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap; }
+      body form div.essayOverwrite-group label#essayOverwriteWarning-label {
+        width: 75%;
+        margin: auto;
+        text-align: center; }
+      body form div.essayOverwrite-group input#essayOverwriteWarning.form-control {
+        width: 25%;
+        height: 1.6rem;
+        margin: 1rem auto 0; }
+      body form div.essayOverwrite-group small {
+        width: 60%;
+        margin: auto; }
+    body form div.form-group {
+      display: flex; }
+      body form div.form-group label {
+        width: 20%; }
+      body form div.form-group input {
+        width: 80%; }
+      body form div.form-group button#submit {
+        margin: 1.5rem auto 0;
+        padding: 1.25rem 2.75rem;
+        font-size: 1.2rem; }
+      body form div.form-group input#file {
+        margin-right: 1rem;
+        border: none; }

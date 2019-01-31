@@ -11,31 +11,75 @@ body {
     text-align: center;
     padding: 30px;
 
-    h1 {
-        font-size: 3rem;
+    div.header {
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+        }
+        h2 {
+            text-align: center;
+            font-size: 1.8rem;
+        }
     }
 
     form {
-        width: 32%;
+        width: 55%;
         margin: 3rem auto;
         padding: 2rem;
         border: 3px solid lightgrey;
         display: flex;
-        justify-content: center;
-        flex-direction: column;
+        flex-flow: column wrap;
+
+        // input#file.form-control {
+        //     border: none;
+        // }
+
+        div.essayOverwrite-group {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            label#essayOverwriteWarning-label {
+                width: 75%;
+                margin: auto;
+                text-align: center;
+            }
+
+            input#essayOverwriteWarning.form-control {
+                width: 25%;
+                height: 1.6rem;
+                margin: 1rem auto 0;
+            }
+
+            small {
+                width: 60%;
+                margin: auto;
+            }
+        }
 
         div.form-group {
-
+            display: flex;
+            // justify-content: center;
             label {
-                margin-right: 7px;
+                width: 20%;
             }
 
             input {
-                margin: 5px;
+                width: 80%;
             }
 
-        }
+            button#submit {
+                // height: 2rem;
+                // width: 6rem;
+                margin: 1.5rem auto 0;
+                padding: 1.25rem 2.75rem;
+                font-size: 1.2rem;
+            }
 
+            input#file {
+                margin-right: 1rem;
+                border: none;
+            }
+        }
     }
 
 }

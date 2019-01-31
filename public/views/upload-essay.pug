@@ -1,0 +1,49 @@
+html(lang='en')
+    head
+        meta(charset='utf-8')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')
+        meta(name='author' content='John MacIntire')
+        meta(name='description' content="Upload an essay to JMScholar.org's essay competition.")
+        meta(name='viewport', content='width=device-width, initial-scale=1')
+        link(href='../styles/styles.css', rel='stylesheet')
+        link(href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet')
+        link(href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous")
+
+        title JMScholar.org - Essay Upload
+        
+    body
+        div.header
+            h1 JMScholar.org
+            h2 Essay Submission Form
+        form(action="/upload-essay" method="POST" enctype="multipart/form-data")
+            div.form-group
+                label(for="firstName") First Name:
+                input(type="text" name="firstName" class="form-control")
+            div.form-group
+                label(for="middleName") Middle Name:
+                input(type="text" name="middleName" id="test" class="form-control")
+            div.form-group
+                label(for="lastName") Last Name:
+                input(type="text" name="lastName" class="form-control")
+            div.form-group
+                label(for="id") User ID:
+                input(type="text" name="id" class="form-control")
+            div.form-group
+                label(for='email') Email:
+                input(type="text" name="email" class="form-control")
+            div.form-group
+                label(for="file") Upload File:
+                input(type="file" name="file" id="file" class="form-control")
+            div.form-group
+                div.essayOverwrite-group
+                    label(for="essayOverwriteWarning" id="essayOverwriteWarning-label") Overwrite Previous Essay Submission 
+                    input(type="checkbox" name="essayOverwriteWarning" id="essayOverwriteWarning" class="form-control" required)
+                    br
+                    small By checking the box above you acknowledge that you can only submit one essay at a time. You may submit up to 3 essays, however, only the last essay to be submitted will be judged in the competition.
+            div.form-group
+                button(type="submit" id='essaySubmit') Submit Essay
+                    
+        script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous")
+        script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous")
+        script(src="../scripts/script.js")

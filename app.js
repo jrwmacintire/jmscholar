@@ -58,6 +58,16 @@ if (cluster.isMaster) {
         });
     });
 
+    app.get('/upload-essay', (req, res) => {
+        // res.status(200).send('serve sum pug dude');
+        res.render('upload-essay');
+    });
+
+    app.get('/register-student', (req, res) => {
+        // res.status(200).send('serve sum pug dude');
+        res.render('register-student');
+    });
+
     app.post('/register-hs', function(req, res) {
         // console.log('\nreq.body:\n', req.body);
         const validItem = validateItem(req.body, 'school-rep');
@@ -154,6 +164,7 @@ if (cluster.isMaster) {
     });
 
     app.post('/upload-essay', (req, res) => {
+        console.log('Raw Request!:', req);
         console.log(`\nReceived POST at '/upload-essay'!`);
         const { firstName, middleName, lastName, id, email } = req.body;
         // console.log(`name: ${name} | id: ${id} | email: ${email}`);
