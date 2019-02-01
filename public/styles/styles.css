@@ -9,14 +9,21 @@ body {
   padding: 30px; }
   body div.header h1 {
     text-align: center;
-    font-size: 3rem; }
+    font-size: 3rem;
+    margin: 2rem; }
   body div.header h2 {
     text-align: center;
     font-size: 1.8rem; }
   body div.header h3 {
     text-align: center;
     font-size: 1.4rem;
-    margin-top: 2rem; }
+    margin-top: 3rem; }
+  body div.essayObject {
+    width: 50%;
+    margin: 3rem auto;
+    border: '2px lightgrey solid'; }
+    body div.essayObject span {
+      font-weight: bold; }
   body form {
     min-width: 500px;
     max-width: 55%;

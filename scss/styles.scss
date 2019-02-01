@@ -15,6 +15,7 @@ body {
         h1 {
             text-align: center;
             font-size: 3rem;
+            margin: 2rem;
         }
         h2 {
             text-align: center;
@@ -23,7 +24,16 @@ body {
         h3 {
             text-align: center;
             font-size: 1.4rem;
-            margin-top: 2rem;
+            margin-top: 3rem;
+        }
+    }
+
+    div.essayObject {
+        width: 50%;
+        margin: 3rem auto;
+        border: '2px lightgrey solid';
+        span {
+            font-weight: bold;
         }
     }
 

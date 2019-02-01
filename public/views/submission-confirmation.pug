@@ -16,7 +16,19 @@ html(lang='en')
             h1 JMScholar.org
             h3 Your Essay Has Successfully Been Submitted!
             
-            #{essayObject}
-
+        div.essayObject
+            p 
+                span Author: 
+                | #{essayObject.author.S}
+            p 
+                span Essay ID: 
+                | #{essayObject.essayId.S}
+            p
+                span Filename: 
+                | #{essayObject.filename.S}
+            p
+                span Submission Made At:
+                br
+                | #{essayObject.createdAt.S}
 
         script(src="../scripts/script.js")
