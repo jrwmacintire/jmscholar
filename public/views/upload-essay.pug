@@ -15,7 +15,7 @@ html(lang='en')
         div.header
             h1 JMScholar.org
             h2 Essay Submission Form
-        form(action="/upload-essay" method="POST" enctype="multipart/form-data")
+        form(action="/upload-essay" method="POST" id="essaySubmissionForm" enctype="multipart/form-data")
             div.form-group
                 label(for="firstName") First Name:
                 input(type="text" name="firstName" id="firstName" class="form-control"  required)
@@ -41,7 +41,7 @@ html(lang='en')
                     br
                     small By checking the box above you acknowledge that you can only submit one essay at a time. You may submit up to 3 essays, however, only the last essay to be submitted will be judged in the competition.
             div.form-group
-                button(type="submit" onsubmit="return validateForm()" id='essaySubmit') Submit Essay
+                button(type="submit" id='essaySubmit') Submit Essay
                     
         script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous")

@@ -2,7 +2,9 @@ const firstName = document.getElementById('firstName'),
       middleName = document.getElementById('middleName'),
       lastName = document.getElementById('lastName'),
       email = document.getElementById('email'),
-      userId = document.getElementById('userId');
+      userId = document.getElementById('userId'),
+      essaySubmit = document.getElementById('essaySubmit'),
+      form = document.getElementById('essaySubmissionForm');
 
 firstName.addEventListener('keyup', (event) => {
     // console.log(event);
@@ -35,6 +37,20 @@ email.addEventListener('keyup', (event) => {
     // console.log(validateEmail(`valid email: ${email.value}`));
     const validEmail = validateEmail(email.value);
     displayInputBorder('email', validEmail);
+});
+
+// essaySubmit.addEventListener('click', event => {
+//     event.preventDefault();
+//     console.log('Submit was clicked!');
+//     // get value of the ID 'input' field
+//     // send ID to server at new endpoint (?)
+//     // if response says to go ahead, send formData
+//     // error should highlight the ID field and prevent form submission!
+//     const formData = new FormData(form);
+//
+//     fetch(`/validate-userid?inputUserId=${userId.value}&inputEmail=${email.value}`).then(response => {
+//         console.log('Response from userId validation endpoint!\n', response.body);
+//     });
 });
 
 function validateName(name) {

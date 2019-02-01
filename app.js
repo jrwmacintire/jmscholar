@@ -72,6 +72,43 @@ if (cluster.isMaster) {
         res.render('submission-confirmation');
     });
 
+    app.get('/validate-userid', (req, res) => {
+        const { inputEmail, inputUserId } = req.query;
+        console.log(`'/validate-userid' endpoint!\ninputEmail: ${inputEmail} | inputUserId: ${inputUserId}`);
+        const queryParams = {
+            TableName: ddbTableName,
+            KeyConditionExpression: '#dbEmail = :inputEmail',
+            ExpressionAttributeNames: {
+                '#dbEmail': 'email'
+            },
+            ExpressionAttributeValues: {
+                ':inputEmail': { 'S': inputEmail }
+            }
+        };
+        ddb.query(queryParams, (err, data) => {
+            if(err) console.error(`Error querying ${ddbTableName}\n`, err);
+            else {
+                // console.log('data.Items:\n', data.Items);
+                const queryItem = data.Items[0];
+                if(queryItem){
+                    // console.log(`queryItem:\n`, queryItem);
+                    if(queryItem.id == inputUserId) {
+                        res.status(200).send({
+                            message: 'IDs matched.'
+                        });
+                    } else {
+                        res.status(400).send({
+                            error: 'User input ID does not match user ID associated with the provided email address.'
+                        });
+                    }
+                } else {
+                    console.error(`Error querying for 'inputUserId' ${inputUserId}.`);
+
+                }
+            }
+        });
+    });
+
     app.post('/register-hs', function(req, res) {
         // console.log('\nreq.body:\n', req.body);
         const validItem = validateItem(req.body, 'school-rep');
@@ -243,9 +280,14 @@ if (cluster.isMaster) {
                             }
                         })
                         // res.status(200).send(essayObject);
-                    } else res.status(400).send({
-                        error: `Queried item's ID (${item.id.S}) did not match id: ${id})`
-                    })
+                    } else {
+                        res.status(400).send({
+                            error: `Queried item's ID did not match 'id': ${id}`
+                        });
+                        // res.status(400).send({
+                        //     error: `Queried item's ID (${item.id.S}) did not match id: ${id})`
+                        // });
+                    }
                 } else {
                     res.status(400).send({
                         error: 'Essay submission contained an invalid name or mimetype.'
