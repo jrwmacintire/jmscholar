@@ -13,8 +13,13 @@ body {
   body div.header h2 {
     text-align: center;
     font-size: 1.8rem; }
+  body div.header h3 {
+    text-align: center;
+    font-size: 1.4rem;
+    margin-top: 2rem; }
   body form {
-    width: 55%;
+    min-width: 500px;
+    max-width: 55%;
     margin: 3rem auto;
     padding: 2rem;
     border: 3px solid lightgrey;
@@ -38,10 +43,12 @@ body {
     body form div.form-group {
       display: flex; }
       body form div.form-group label {
-        width: 20%; }
+        width: 20%;
+        margin: auto; }
       body form div.form-group input {
-        width: 80%; }
-      body form div.form-group button#submit {
+        width: 80%;
+        margin: auto; }
+      body form div.form-group button#essaySubmit {
         margin: 1.5rem auto 0;
         padding: 1.25rem 2.75rem;
         font-size: 1.2rem; }

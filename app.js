@@ -68,6 +68,10 @@ if (cluster.isMaster) {
         res.render('register-student');
     });
 
+    app.get('/submission-confirmation', (req, res) => {
+        res.render('submission-confirmation');
+    });
+
     app.post('/register-hs', function(req, res) {
         // console.log('\nreq.body:\n', req.body);
         const validItem = validateItem(req.body, 'school-rep');
@@ -164,7 +168,7 @@ if (cluster.isMaster) {
     });
 
     app.post('/upload-essay', (req, res) => {
-        console.log('Raw Request!:', req);
+        // console.log('Raw Request!:', req);
         console.log(`\nReceived POST at '/upload-essay'!`);
         const { firstName, middleName, lastName, id, email } = req.body;
         // console.log(`name: ${name} | id: ${id} | email: ${email}`);
@@ -174,7 +178,7 @@ if (cluster.isMaster) {
               essayId = shortid.generate();
 
         const validEssaySubmission = validateEssaySubmission(file);
-        console.log('file:\n', file);
+        console.log('validEssaySubmission:\n', validEssaySubmission);
 
         // convert Buffer to string for storage
         // const bufferString = file.data.toString();
@@ -233,9 +237,12 @@ if (cluster.isMaster) {
                             else {
                                 console.log(`UpdatedItem succeeded!!`);
                                 // console.log(JSON.stringify(data, null, 2) + '\n');
+                                res.render('submission-confirmation', {
+                                    essayObject: essayObject
+                                });
                             }
                         })
-                        res.status(200).send(essayObject);
+                        // res.status(200).send(essayObject);
                     } else res.status(400).send({
                         error: `Queried item's ID (${item.id.S}) did not match id: ${id})`
                     })

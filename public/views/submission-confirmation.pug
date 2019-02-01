@@ -1,0 +1,22 @@
+html(lang='en')
+    head
+        meta(charset='utf-8')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')
+        meta(name='author' content='John MacIntire')
+        meta(name='description' content="Upload an essay to JMScholar.org's essay competition.")
+        meta(name='viewport', content='width=device-width, initial-scale=1')
+        link(href='../styles/styles.css', rel='stylesheet')
+        link(href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet')
+        link(href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous")
+
+        title JMScholar.org - Essay Upload Confirmation
+        
+    body
+        div.header
+            h1 JMScholar.org
+            h3 Your Essay Has Successfully Been Submitted!
+            
+            #{essayObject}
+
+
+        script(src="../scripts/script.js")

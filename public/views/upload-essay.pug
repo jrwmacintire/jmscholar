@@ -18,22 +18,22 @@ html(lang='en')
         form(action="/upload-essay" method="POST" enctype="multipart/form-data")
             div.form-group
                 label(for="firstName") First Name:
-                input(type="text" name="firstName" class="form-control")
+                input(type="text" name="firstName" id="firstName" class="form-control"  required)
             div.form-group
                 label(for="middleName") Middle Name:
-                input(type="text" name="middleName" id="test" class="form-control")
+                input(type="text" name="middleName" id="middleName" class="form-control")
             div.form-group
                 label(for="lastName") Last Name:
-                input(type="text" name="lastName" class="form-control")
+                input(type="text" name="lastName" id="lastName" class="form-control"  required)
             div.form-group
                 label(for="id") User ID:
-                input(type="text" name="id" class="form-control")
+                input(type="text" name="id" id="userId" class="form-control" required)
             div.form-group
                 label(for='email') Email:
-                input(type="text" name="email" class="form-control")
+                input(type="text" name="email" id="email" class="form-control" required)
             div.form-group
                 label(for="file") Upload File:
-                input(type="file" name="file" id="file" class="form-control")
+                input(type="file" name="file" id="file" class="form-control" required)
             div.form-group
                 div.essayOverwrite-group
                     label(for="essayOverwriteWarning" id="essayOverwriteWarning-label") Overwrite Previous Essay Submission 
@@ -41,7 +41,7 @@ html(lang='en')
                     br
                     small By checking the box above you acknowledge that you can only submit one essay at a time. You may submit up to 3 essays, however, only the last essay to be submitted will be judged in the competition.
             div.form-group
-                button(type="submit" id='essaySubmit') Submit Essay
+                button(type="submit" onsubmit="return validateForm()" id='essaySubmit') Submit Essay
                     
         script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous")

@@ -20,10 +20,16 @@ body {
             text-align: center;
             font-size: 1.8rem;
         }
+        h3 {
+            text-align: center;
+            font-size: 1.4rem;
+            margin-top: 2rem;
+        }
     }
 
     form {
-        width: 55%;
+        min-width: 500px;
+        max-width: 55%;
         margin: 3rem auto;
         padding: 2rem;
         border: 3px solid lightgrey;
@@ -61,13 +67,15 @@ body {
             // justify-content: center;
             label {
                 width: 20%;
+                margin: auto;
             }
 
             input {
                 width: 80%;
+                margin: auto;
             }
 
-            button#submit {
+            button#essaySubmit {
                 // height: 2rem;
                 // width: 6rem;
                 margin: 1.5rem auto 0;
