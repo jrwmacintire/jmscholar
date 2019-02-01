@@ -24,6 +24,14 @@ body {
     border: '2px lightgrey solid'; }
     body div.essayObject span {
       font-weight: bold; }
+  body p.nav-links {
+    font-size: 1.2rem;
+    font-weight: bold; }
+    body p.nav-links a {
+      color: black;
+      text-decoration: none; }
+    body p.nav-links a:hover {
+      color: blue; }
   body form {
     min-width: 500px;
     max-width: 55%;
